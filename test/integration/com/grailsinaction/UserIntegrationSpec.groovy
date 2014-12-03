@@ -68,18 +68,32 @@ class UserIntegrationSpec extends IntegrationSpec {
     }
 
     def "Recovering from a failed save by fixing invalid properties"() {
-        give: "A user that has invalid properties"
+        given: "A user that has invalid properties"
         def chuck = new User(loginId: 'chuck', password: 'tiny', homepage: 'not-a-url')
         assert chuck.save() == null
         assert chuck.hasErrors()
 
         when: "We fix the invalid properties"
-        chuck.password = "firstfirst"
+        chuck.password = "fistfist"
         chuck.homepage = "http://www.chucknorrisfacts.com"
         chuck.validate()
 
         then: "The user saves and validates fine"
         !chuck.hasErrors()
         chuck.save()
+    }
+
+    def "Fail if loginId and password are the same"() {
+        given: "A user with the same loginId and password"
+        def secret = new User(loginId: 'secret', password: 'secret', homepage: 'http://www.grailsinaction.com')
+
+        when: "The user is validated"
+        secret.validate()
+
+        then:
+        secret.hasErrors()
+
+        "validator.invalid" == secret.errors.getFieldError("password").code
+        "secret" == secret.errors.getFieldError("password").rejectedValue
     }
 }
