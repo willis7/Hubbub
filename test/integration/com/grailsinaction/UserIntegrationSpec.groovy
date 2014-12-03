@@ -66,4 +66,20 @@ class UserIntegrationSpec extends IntegrationSpec {
         "not-a-url" == user.errors.getFieldError("homepage").rejectedValue
         !user.errors.getFieldError("loginId")
     }
+
+    def "Recovering from a failed save by fixing invalid properties"() {
+        give: "A user that has invalid properties"
+        def chuck = new User(loginId: 'chuck', password: 'tiny', homepage: 'not-a-url')
+        assert chuck.save() == null
+        assert chuck.hasErrors()
+
+        when: "We fix the invalid properties"
+        chuck.password = "firstfirst"
+        chuck.homepage = "http://www.chucknorrisfacts.com"
+        chuck.validate()
+
+        then: "The user saves and validates fine"
+        !chuck.hasErrors()
+        chuck.save()
+    }
 }
