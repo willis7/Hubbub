@@ -82,18 +82,4 @@ class UserIntegrationSpec extends IntegrationSpec {
         !chuck.hasErrors()
         chuck.save()
     }
-
-    def "Fail if loginId and password are the same"() {
-        given: "A user with the same loginId and password"
-        def secret = new User(loginId: 'secret', password: 'secret', homepage: 'http://www.grailsinaction.com')
-
-        when: "The user is validated"
-        secret.validate()
-
-        then:
-        secret.hasErrors()
-
-        "validator.invalid" == secret.errors.getFieldError("password").code
-        "secret" == secret.errors.getFieldError("password").rejectedValue
-    }
 }
