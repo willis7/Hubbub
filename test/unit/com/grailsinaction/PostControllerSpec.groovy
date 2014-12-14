@@ -39,4 +39,23 @@ class PostControllerSpec extends Specification {
         then: "a 404 is sent to the browser"
         response.status == 404
     }
+
+    def "Adding a valid new post to the timeline"() {
+        given: "A user with posts in the database"
+        User chuck = new User(loginId: 'chuck_norris', password: 'password').save(failOnError: true)
+
+        and: "A loginId parameter"
+        params.id = chuck.loginId
+
+        and: "Some content for the post"
+        params.content = "Chuck Norris can unit test entire applications with a single assert"
+
+        when: "addPosts is invoked"
+        def model = controller.addPost()
+
+        then: "our flash message and redirect confirms the success"
+        flash.message == "Succesfully created Post"
+        response.redirectedUrl == "/post/timeline/${chuck.loginId}"
+        Post.countByUser(chuck) == 1
+    }
 }
