@@ -3,6 +3,7 @@ package com.grailsinaction
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
+import spock.lang.Unroll
 
 /**
  * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
@@ -51,11 +52,29 @@ class PostControllerSpec extends Specification {
         params.content = "Chuck Norris can unit test entire applications with a single assert"
 
         when: "addPosts is invoked"
-        def model = controller.addPost()
+        controller.addPost()
 
         then: "our flash message and redirect confirms the success"
-        flash.message == "Succesfully created Post"
+        flash.message == "Successfully created post"
         response.redirectedUrl == "/post/timeline/${chuck.loginId}"
         Post.countByUser(chuck) == 1
+    }
+
+    @Unroll
+    def "Testing id of #suppliedId redirects to #expectedUrl"() {
+        given:
+        params.id = suppliedId
+
+        when: "Controller is invoked"
+        controller.home()
+
+        then:
+        response.redirectedUrl == expectedUrl
+
+        where:
+        suppliedId | expectedUrl
+        'joe_cool' | '/post/timeline/joe_cool'
+        null       | '/post/timeline/chuck_norris'
+
     }
 }

@@ -1,7 +1,15 @@
 package com.grailsinaction
 
 class PostController {
+    static defaultAction = "home"
     static scaffold = true
+
+    def home() {
+        if (!params.id) {
+            params.id = 'chuck_norris'
+        }
+        redirect(action: 'timeline', params: params)
+    }
 
     def timeline() {
         def user = User.findByLoginId(params.id)
