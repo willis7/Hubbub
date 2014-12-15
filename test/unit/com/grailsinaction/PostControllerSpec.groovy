@@ -42,22 +42,17 @@ class PostControllerSpec extends Specification {
     }
 
     def "Adding a valid new post to the timeline"() {
-        given: "A user with posts in the database"
-        User chuck = new User(loginId: 'chuck_norris', password: 'password').save(failOnError: true)
+        given: "a mock post service"
+        def mockPostService = Mock(PostService)
+        1 * mockPostService.createPost(_, _) >> new Post(content: 'Mock Post')
+        controller.postService = mockPostService
 
-        and: "A loginId parameter"
-        params.id = chuck.loginId
+        when: "controller is invoked"
+        def result = controller.addPost('joe_cool', 'Posting up a storm')
 
-        and: "Some content for the post"
-        params.content = "Chuck Norris can unit test entire applications with a single assert"
-
-        when: "addPosts is invoked"
-        controller.addPost()
-
-        then: "our flash message and redirect confirms the success"
-        flash.message == "Successfully created post"
-        response.redirectedUrl == "/post/timeline/${chuck.loginId}"
-        Post.countByUser(chuck) == 1
+        then: "redirected to timeline, flash message tells us all is well"
+        flash.message ==~ /Added new post: Mock.*/
+        response.redirectedUrl == '/post/timeline/joe_cool'
     }
 
     @Unroll
