@@ -1,0 +1,12 @@
+language: groovy
+
+jdk:
+  - oraclejdk7
+  - openjdk7
+  - openjdk6
+
+script: ./grailsw refresh-dependencies
+     && ./grailsw test-app
+
+before_install:
+ - chmod +x grailsw
