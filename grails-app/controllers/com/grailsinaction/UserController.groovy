@@ -29,4 +29,26 @@ class UserController {
             }
         }
     }
+
+}
+
+class UserRegistrationCommand {
+    String loginId
+    String password
+    String passwordRepeat
+    byte[] photo
+    String fullname
+    String bio
+    String homepage
+    String email
+    String timezone
+    String country
+    String jabberAddress
+
+    static constraints = {
+        importFrom Profile
+        importFrom User
+        password(size: 6..8, blank: false, validator: { passwd, urc -> return passwd != urc.loginId })
+        passwordRepeat(nullable: false, validator: { passwd2, urc -> return passwd2 == urc.password })
+    }
 }
