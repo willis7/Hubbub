@@ -30,6 +30,28 @@ class UserController {
         }
     }
 
+    // Binds data from params to command object
+    def register2(UserRegistrationCommand urc) {
+        // Uses hasErrors to check validations
+        if (urc.hasErrors()) {
+            render view: "register", model: [user: urc]
+        } else {
+            // Binds data to new user object
+            def user = new User(urc.properties)
+            user.profile = new Profile(urc.properties)
+
+            // Saves and validates new user
+            // You have to confirm the save() is successful, because the constraints only make sense in the domain class
+            // and not in the command object.
+            if (user.validate() && user.save()) {
+                flash.message = "Welcome aboard, ${urc.fullName ?: urc.loginId}"
+                redirect(uri: '/')
+            } else {
+                // maybe not unique loginId
+                return [user: urc]
+            }
+        }
+    }
 }
 
 class UserRegistrationCommand {
@@ -37,7 +59,7 @@ class UserRegistrationCommand {
     String password
     String passwordRepeat
     byte[] photo
-    String fullname
+    String fullName
     String bio
     String homepage
     String email

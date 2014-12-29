@@ -4,6 +4,7 @@ import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 import spock.lang.Unroll
+import spock.util.mop.Use
 
 @TestFor(UserController)
 @Mock([User, Profile])
@@ -55,6 +56,32 @@ class UserControllerSpec extends Specification {
         loginId | password   | passwordRepeat | anticipatedValid | fieldInError     | errorCode
         "glen"  | "password" | "no-match"     | false            | "passwordRepeat" | "validator.invalid"
         "peter" | "password" | "password"     | true             | null             | null
-        "a"     | "password" | "password"     | false            | "loginId"        | "size.tooSmall"
+        "a" | "password" | "password" | false | "loginId" | "size.toosmall"
+    }
+
+    def "Invoking the new register action via a command object"() {
+        given: "a configured command object"
+        def urc = mockCommandObject(UserRegistrationCommand)
+        urc.with {
+            loginId = "glen_a_smith"
+            fullName = "Glen Smith"
+            email = "glen@bytecode.com.au"
+            password = "password"
+            passwordRepeat = "password"
+        }
+
+        // You must call validate() manually when testing with controllers.
+        and: "which has been validated"
+        urc.validate()
+
+        when: "the register action is invoked"
+        // pass your command object into your controller
+        controller.register2(urc)
+
+        then: "the user is registered and browser redirected"
+        !urc.hasErrors()
+        response.redirectedUrl == '/'
+        User.count() == 1
+        Profile.count() == 1
     }
 }
