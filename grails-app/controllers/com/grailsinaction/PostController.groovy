@@ -1,5 +1,11 @@
 package com.grailsinaction
 
+/**
+ * PostController
+ * Injects PostService instance into controller
+ *
+ * @see PostService
+ */
 class PostController {
     static scaffold = true
     static defaultAction = "home"
@@ -13,15 +19,29 @@ class PostController {
         redirect(action: 'timeline', params: params)
     }
 
+    /**
+     * Retrieves user based on id parameter. Sends error code for nonexistent users.
+     *
+     * @param id
+     * @return user    actions passes matched user to view as a map
+     */
     def timeline(String id) {
         def user = User.findByLoginId(id)
         if (!user) {
             response.sendError(404)
         } else {
-            return [user: user] // actions results placed into a map and returned to the view
+            return [user: user]
         }
     }
 
+    /**
+     * Invokes service method
+     *
+     * @param id
+     * @param content
+     * @return returns     user to timeline
+     * @see PostService
+     */
     def addPost(String id, String content) {
         try {
             def newPost = postService.createPost(id, content)

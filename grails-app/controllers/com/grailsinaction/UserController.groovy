@@ -5,17 +5,28 @@ class UserController {
 
     def search() {}
 
+    /**
+     * Action for the "search" form page. Takes an argument that matches the name on the text field in the form
+     * then queries the DB for all users with a loginId that's like the search string.
+     *
+     * @param loginId text field in the form
+     * @return
+     */
     def results(String loginId) {
         def users = User.where {
-            loginId =~ "%${loginId}"    // left hand side is the property of the User. Right hand side is the actions arg.
-                                        // we add the SQL wildcard (%) so the user doesnt have to.
-                                        // =~ is the equivalent to ILIKE in SQL
+            loginId =~ "%${loginId}"
+            // left hand side is the property of the User. Right hand side is the actions arg.
+            // we add the SQL wildcard (%) so the user doesnt have to.
+            // =~ is the equivalent to ILIKE in SQL
         }.list()
         return [users     : users,
                 term      : params.loginId,
                 totalUsers: User.count]
     }
 
+    /**
+     * Action for registering a new user. Form submitted as POST, so create new user.
+     */
     def register() {
         if (request.method == "POST") {
             def user = new User(params)
@@ -30,7 +41,9 @@ class UserController {
         }
     }
 
-    // Binds data from params to command object
+    /**
+     * Binds data from params to command object
+     */
     def register2(UserRegistrationCommand urc) {
         // Uses hasErrors to check validations
         if (urc.hasErrors()) {

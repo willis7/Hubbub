@@ -20,6 +20,7 @@ class QueryIntegrationSpec extends IntegrationSpec {
     def "Multiple criteria"() {
         when: "A user is selected by loginId or password"
         def users = User.where {
+            // Combines conditions with logical operators
             loginId == 'frankie' || password == 'crikey'
         }.list(sort: 'loginId')
 
@@ -30,6 +31,7 @@ class QueryIntegrationSpec extends IntegrationSpec {
     def "Query on association"() {
         when: "The 'following' collection is queried"
         def users = User.where {
+            // Queries on single and multi-ended associations via standard "." syntax
             following.loginId == 'sara'
         }.list(sort: 'loginId')
 
@@ -43,6 +45,7 @@ class QueryIntegrationSpec extends IntegrationSpec {
 
         when: "The 'dateCreated' property is queried"
         def users = User.where {
+            // Uses in operator plus a range to do a SQL BETWEEN query
             dateCreated in (now.minus(1))..now
         }.list(sort: 'loginId', order: 'desc')
 
@@ -54,6 +57,8 @@ class QueryIntegrationSpec extends IntegrationSpec {
         when: "A specific user is queried with get()"
         def user = User.where {
             loginId == 'phil'
+            // Returns a single instance rather than list via get(). Throws an exception if there's more than one
+            // matching result.
         }.get()
 
         then: "A single instance is returned"
