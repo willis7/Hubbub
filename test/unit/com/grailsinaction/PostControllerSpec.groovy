@@ -6,7 +6,7 @@ import spock.lang.Specification
 import spock.lang.Unroll
 
 @TestFor(PostController)
-@Mock([User, Post])
+@Mock([User, Post, LameSecurityFilters])
 class PostControllerSpec extends Specification {
 
     def "Get a users timeline given their id"() {
@@ -68,5 +68,15 @@ class PostControllerSpec extends Specification {
         'joe_cool' | '/post/timeline/joe_cool'
         null       | '/post/timeline/chuck_norris'
 
+    }
+
+    def "Exercising security filter for an unauthenticated user"() {
+        when:
+        withFilters(action: "addPost") {
+            controller.addPost("glenn_a_smith", "A first post")
+        }
+
+        then:
+        response.redirectedUrl == '/login/form'
     }
 }
