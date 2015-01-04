@@ -51,4 +51,18 @@ class PostController {
         }
         redirect(action: 'timeline', id: id)
     }
+
+    /**
+     * Displays the current users timeline or redirects to the login page if no user is logged in.
+     */
+    def personal() {
+        if (!session.user) {
+            redirect controller: "login", action: "form"
+            return
+        } else {
+            // Need to reattach the user domain object to the sessin using
+            // the refresh() method
+            render view: "timeline", model: [user: session.user.refresh()]
+        }
+    }
 }
