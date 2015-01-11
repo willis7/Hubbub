@@ -24,7 +24,7 @@ class BootStrap {
         def chuck = new User(
                 loginId: "chuck_norris",
                 password: "highkick",
-                profile: new Profile(fullName: "Chuck Norris", email: "chuck@nowhere.net"),
+                profile: new Profile(fullName: "Chuck Norris", email: "chuck@nowhere.net", skin: "blues"),
                 dateCreated: now).save(failOnError: true)
         def glen = new User(
                 loginId: "glen",
